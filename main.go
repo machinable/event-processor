@@ -3,19 +3,34 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+	"os"
 
 	"github.com/go-redis/redis"
 	"github.com/machinable/event-processor/webhook"
 	"github.com/sirupsen/logrus"
 )
 
+const (
+	// QueueHooks is the redis queue for web hooks
+	QueueHooks = "hook_queue"
+	// QueueHookResults is the redis queue for web hook result messages
+	QueueHookResults = "hook_result_queue"
+)
+
+func getEnv(key, fallback string) string {
+	value := os.Getenv(key)
+	if len(value) == 0 {
+		return fallback
+	}
+	return value
+}
+
 func main() {
 	// create a new redis client
 	queue := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Addr:     getEnv("REDIS_ADDR", "localhost:6379"),
+		Password: getEnv("REDIS_PW", ""), // no password set
+		DB:       0,                      // use default DB
 	})
 
 	// ping the redis server
@@ -43,7 +58,7 @@ func main() {
 
 		// exit on a read error
 		if err != nil {
-			log.Println(err)
+			logger.Error(err)
 			return
 		}
 
@@ -55,6 +70,12 @@ func main() {
 		}
 
 		// send event
-		go client.PostHook(event)
+		hookResult := client.PostHook(event)
+		b, _ := json.Marshal(hookResult)
+
+		// add hook result to queue
+		if err := queue.RPush(QueueHookResults, b).Err(); err != nil {
+			logger.Error(err)
+		}
 	}
 }
