@@ -55,6 +55,6 @@ func main() {
 		}
 
 		// send event
-		client.PostHook(event)
+		go client.PostHook(event)
 	}
 }
