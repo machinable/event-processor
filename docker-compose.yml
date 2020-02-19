@@ -1,0 +1,19 @@
+version: '3'
+services:
+
+  redis:
+    image: redis
+    container_name: queue
+    ports:
+      - '127.0.0.1:6379:6379'
+ 
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - 'redis'
+    environment:
+      - REDIS_ADDR=queue:6379
+      - REDIS_PW=
