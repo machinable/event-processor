@@ -71,7 +71,7 @@ func (c *Client) PostHook(event *HookEvent) *HookResult {
 	respTime := time.Now().Sub(requestStart).Seconds() * 1000
 
 	// set response time to result
-	result.ResponseTime = respTime
+	result.ResponseTime = int64(respTime)
 
 	if rerr != nil {
 		c.logger.Error(rerr)

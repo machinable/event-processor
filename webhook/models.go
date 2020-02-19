@@ -2,11 +2,11 @@ package webhook
 
 // HookResult contains relevant information regarding the http response
 type HookResult struct {
-	WebHookID    string  `json:"webhook_id"`
-	ProjectID    string  `json:"project_id"`
-	StatusCode   int     `json:"status_code"`
-	ResponseTime float64 `json:"response_time"`
-	ErrorMessage string  `json:"error_message"`
+	WebHookID    string `json:"webhook_id"`
+	ProjectID    string `json:"project_id"`
+	StatusCode   int    `json:"status_code"`
+	ResponseTime int64  `json:"response_time"`
+	ErrorMessage string `json:"error_message"`
 }
 
 // WebHook wraps the webhook object of the event
