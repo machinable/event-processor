@@ -21,8 +21,9 @@ type Header struct {
 
 // HookEvent describes a single web hook event
 type HookEvent struct {
-	Hook    *WebHook               `json:"hook"`
-	Payload map[string]interface{} `json:"payload"`
+	Hook      *WebHook               `json:"hook"`
+	EntityKey string                 `json:"entity_key"`
+	Payload   map[string]interface{} `json:"payload"`
 }
 
 // Format formats the event for post
@@ -31,7 +32,8 @@ func (h *HookEvent) Format() map[string]interface{} {
 	payload["payload"] = h.Payload
 	payload["event"] = h.Hook.HookEvent
 	payload["project_Id"] = h.Hook.ProjectID
-	payload["entity"] = h.Hook.Entity
+	payload["entity_type"] = h.Hook.Entity
+	payload["entity_key"] = h.EntityKey
 
 	return payload
 }
