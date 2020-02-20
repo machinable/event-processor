@@ -28,9 +28,9 @@ func getEnv(key, fallback string) string {
 func main() {
 	// create a new redis client
 	queue := redis.NewClient(&redis.Options{
-		Addr:     getEnv("REDIS_ADDR", "localhost:6379"),
-		Password: getEnv("REDIS_PW", ""), // no password set
-		DB:       0,                      // use default DB
+		Addr:     "cache:6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
 	})
 
 	// ping the redis server
@@ -54,7 +54,7 @@ func main() {
 	logger.Info("waiting for events...")
 	for {
 		// endlessly read from queue
-		result, err := queue.BLPop(0, "hook_queue").Result()
+		result, err := queue.BLPop(0, QueueHooks).Result()
 
 		// exit on a read error
 		if err != nil {
